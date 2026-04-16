@@ -1,2 +1,2 @@
 # mySkills
-个人 Copilot Skill 合集
+个人 Skill 合集
