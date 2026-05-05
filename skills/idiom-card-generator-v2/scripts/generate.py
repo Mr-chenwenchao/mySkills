@@ -17,7 +17,7 @@ parser.add_argument("--example-cn", default="他整天说喜欢冒险，结果�
 parser.add_argument("--example-en", default="He talks about loving adventure but is afraid of amusement parks.")
 parser.add_argument("--title-en", default="Professing Love for Dragons")
 parser.add_argument("--illustration", default="一位身穿古代官服的叶公躲在桌子底下发抖，一条真龙从窗口探进头来。墙上挂满龙的书画。")
-parser.add_argument("--seal", default="若瑜的成语笔记")
+parser.add_argument("--seal", default="若瑜成语")
 parser.add_argument("--out", default="/tmp/xhs_cards_v2")
 args = parser.parse_args()
 
@@ -45,21 +45,24 @@ TW, TH = 1242, 1660
 
 # ======== 视觉基座（不变的核心风格）========
 VISUAL_CORE = """# Visual Style: Traditional Chinese ink wash on authentic Xuan paper
-[MATERIAL]: Ultra-realistic antique Xuan paper, {paper} color, {texture}
-[STYLE]: Traditional Chinese brushwork with ink wash technique
-[COLORS]: Deep ink blacks, muted vermilion, soft moss greens, ochre
-[TYPOGRAPHY]: Chinese brush calligraphy + English serif calligraphy, hand-drawn feel
-[INK]: Natural ink bleeding effect, {bleed} intensity
-[SEAL]: A weathered vermilion seal stamp "{SEAL_TEXT}" in seal script, consistently sized, placed at bottom area of the card
-[LIGHTING]: Soft natural side lighting"""
+[MATERIAL & TEXTURE]: Ultra-realistic photo of antique, hand-made Chinese rice paper (Xuan paper). The surface is characterized by:
+  - {texture} on {paper} colored paper
+  - Raw irregular feathered paper edges
+  - Subtle tea-stained or aged coloring
+  - Visible paper fibers and slight natural imperfections
+  - No smooth computer rendering, pure physical texture
+[STYLE]: Delicate traditional Chinese brushwork, ink wash (Shuimo) technique, soft watercolor gradients, natural ink bleeding and bleeding edges around text and illustrations, as if hand-painted on physical paper. {bleed} ink bleeding intensity.
+[COLORS]: Harmonious ancient tones — deep ink blacks, muted vermilion, soft moss greens, ochre, on aged paper.
+[TYPOGRAPHY]: Chinese elegant hand-drawn brush calligraphy + English classic serif calligraphy. Both use textured ink.
+[SEAL]: A weathered vermilion seal stamp "{SEAL_TEXT}" in seal script, consistently sized, always placed at the bottom-right corner of the card.
+[LIGHTING]: Natural, soft, directional side-lighting that emphasizes the 3D texture and depth of the paper surface."""
 
-# 极细微随机参数（肉眼几乎不可见的变化）
 PAPER_VARS = [
-    ("aged ivory", "visible rice paper fibers"),
-    ("warm cream", "subtle fiber bundles"),
-    ("light ochre", "slight pulp texture"),
-    ("pale beige", "natural paper grain"),
-    ("cream ivory", "fine bamboo fiber traces"),
+    ("aged ivory with visible long plant fibers", "visible rice paper fibers and subtle water stain marks"),
+    ("warm cream with slight bamboo fiber traces", "fine fiber bundles and barely visible pulp texture"),
+    ("light ochre with natural aging discoloration", "slight pulp inconsistencies and gentle paper grain"),
+    ("pale beige with subtle foxing spots", "natural paper grain with faint age marks"),
+    ("cream ivory with tea-stained undertone", "fine bamboo fiber traces and subtle paper texture"),
 ]
 INK_VARS = ["natural", "gentle", "subtle"]
 
@@ -164,13 +167,14 @@ print(f"\n📸 02_meaning.jpg (纸:{p2[0]} 墨:{ink2})")
 
 prompt_2 = f"""{paper_desc2}
 
-Image 2: Based on the EXACT SAME visual style as Image 1. Same paper texture feel, same seal size/style, same lighting. Only paper characteristics may differ slightly.
+Image 2: TEXT-FOCUSED explanation card. This is NOT a cover image.
+It should NOT have a large central illustration. Only a very small floating ink wash decorative motif.
 
 "{IDIOM}" in calligraphy at top. "{PINYIN} · {EN_TITLE}" in English below.
 Title: "解释 / Explanation"
 Chinese: "{MEANING}"
 English: "{EN_MEANING}"
-Small floating ink wash motif. Seal stamp "{SEAL_TEXT}" in seal script.
+Small floating ink wash motif (brush tip or cloud, very subtle). Seal stamp "{SEAL_TEXT}" in seal script at bottom-right.
 3:4 vertical (1242x1660)."""
 
 if img1:
@@ -194,13 +198,14 @@ print(f"\n📸 03_usage.jpg (纸:{p3[0]} 墨:{ink3})")
 
 prompt_3 = f"""{paper_desc3}
 
-Image 3: EXACT same visual series as Images 1 and 2. Same paper feel, same seal size/style.
+Image 3: TEXT-FOCUSED usage example card. This is NOT a cover image.
+It should NOT have a large central illustration. Only a very small decorative element.
 
 "{IDIOM}" in calligraphy. "{PINYIN} · {EN_TITLE}" in English below.
 Title: "使用举例 / Usage Example"
 Chinese: "{EXAMPLE_CN}"
 English: "{EXAMPLE_EN}"
-Small floating ink wash decorative element. Seal "{SEAL_TEXT}" in seal script.
+Small floating ink wash decorative element. Seal "{SEAL_TEXT}" in seal script at bottom-right.
 3:4 vertical (1242x1660)."""
 
 if img1 and img2:
