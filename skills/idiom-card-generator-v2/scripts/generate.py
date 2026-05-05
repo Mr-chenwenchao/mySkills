@@ -84,48 +84,57 @@ def save_and_upload(response, filename):
     return None, None
 
 
-def subtle_noise(img_path):
-    """极细微的后处理：肉眼几乎不可见"""
+def subtle_noise(img_path, card_index):
+    """极细微的后处理：每张卡参数不同（增加随机旋转/裁切）"""
     img = Image.open(img_path).convert("RGB")
     if img.size != (TW, TH):
         img = img.resize((TW, TH), Image.LANCZOS)
     
+    # 用 card_index 做种子，确保每张卡处理参数不同
+    rng = random.Random(card_index + 100)
+    
     pixels = img.load()
     
-    # 1. 极少量噪点（0.1%，比之前少10倍）
-    noise_count = int(TW * TH * random.uniform(0.0008, 0.002))
+    # 1. 噪点率每张卡不同（0.05%-0.3%）
+    noise_pct = rng.uniform(0.0005, 0.003)
+    noise_count = int(TW * TH * noise_pct)
     for _ in range(noise_count):
-        x, y = random.randint(0, TW-1), random.randint(0, TH-1)
-        r, g, b = pixels[x, y]
-        noise = random.randint(-12, 12)
-        pixels[x, y] = (max(0, min(255, r+noise)), max(0, min(255, g+noise)), max(0, min(255, b+noise)))
+        x, y = rng.randint(0, TW-1), rng.randint(0, TH-1)
+        r_val, g_val, b_val = pixels[x, y]
+        noise = rng.randint(-15, 15)
+        pixels[x, y] = (max(0, min(255, r_val+noise)), max(0, min(255, g_val+noise)), max(0, min(255, b_val+noise)))
     
-    # 2. 极细微色温（1%，肉眼几乎看不出）
-    shift = random.uniform(-0.01, 0.01)
-    if abs(shift) > 0.005:
+    # 2. 色温每张卡不同方向（0.5%-2%）
+    shift = rng.uniform(-0.02, 0.02)
+    if abs(shift) > 0.003:
         for x in range(TW):
             for y in range(TH):
-                r, g, b = pixels[x, y]
+                r_val, g_val, b_val = pixels[x, y]
                 if shift > 0:
-                    pixels[x, y] = (min(255, r+2), g, max(0, b-1))
+                    pixels[x, y] = (min(255, r_val+rng.randint(1,3)), g_val, max(0, b_val-rng.randint(1,2)))
                 else:
-                    pixels[x, y] = (max(0, r-2), g, min(255, b+1))
+                    pixels[x, y] = (max(0, r_val-rng.randint(1,3)), g_val, min(255, b_val+rng.randint(1,2)))
     
-    # 3. 极轻微亮度抖动（0.5%）
-    brightness = random.uniform(0.995, 1.005)
-    if abs(brightness - 1.0) > 0.003:
+    # 3. 亮度每张卡不同
+    brightness = rng.uniform(0.993, 1.007)
+    if abs(brightness - 1.0) > 0.002:
         enhancer = ImageEnhance.Brightness(img)
         img = enhancer.enhance(brightness)
         pixels = img.load()
     
-    # 4. 灰尘点减少到 1-3 个，颜色更浅
-    dust_count = random.randint(1, 3)
+    # 4. 灰尘点大小/数量/颜色每张卡不同
+    dust_count = rng.randint(1, 5)
     draw = ImageDraw.Draw(img)
     for _ in range(dust_count):
-        x, y = random.randint(100, TW-100), random.randint(100, TH-100)
-        sz = random.randint(1, 3)
-        shade = random.randint(80, 120)
-        draw.ellipse([x, y, x+sz, y+sz], fill=(shade, shade-5, shade-10))
+        x, y = rng.randint(50, TW-50), rng.randint(50, TH-50)
+        sz = rng.randint(1, 4)
+        shade = rng.randint(60, 140)
+        draw.ellipse([x, y, x+sz, y+sz], fill=(shade, shade-rng.randint(0,10), shade-rng.randint(0,15)))
+    
+    # 5. 极轻微随机旋转（0-0.2度）后裁回 — 打破像素级对齐
+    if rng.random() < 0.5:
+        angle = rng.uniform(-0.15, 0.15)
+        img = img.rotate(angle, expand=False, fillcolor=(255,248,240), resample=Image.BICUBIC)
     
     img.save(img_path, quality=92)
     new_sz = os.path.getsize(img_path) // 1024
@@ -164,6 +173,7 @@ ink2 = random.choice(INK_VARS)
 paper_desc2 = VISUAL_CORE.format(paper=p2[0], texture=p2[1], bleed=ink2, SEAL_TEXT=SEAL_TEXT)
 
 print(f"\n📸 02_meaning.jpg (纸:{p2[0]} 墨:{ink2})")
+decor2 = random.choice(["a small ink wash brush tip", "a tiny floating bamboo leaf", "a subtle ink cloud wisp", "a miniature mountain silhouette", "a delicate orchid petal"])
 
 prompt_2 = f"""{paper_desc2}
 
@@ -174,7 +184,7 @@ It should NOT have a large central illustration. Only a very small floating ink 
 Title: "解释 / Explanation"
 Chinese: "{MEANING}"
 English: "{EN_MEANING}"
-Small floating ink wash motif (brush tip or cloud, very subtle). Seal stamp "{SEAL_TEXT}" in seal script at bottom-right.
+Small floating ink wash motif: {decor2}. Seal stamp "{SEAL_TEXT}" in seal script at bottom-right.
 3:4 vertical (1242x1660)."""
 
 if img1:
@@ -195,6 +205,7 @@ ink3 = random.choice(INK_VARS)
 paper_desc3 = VISUAL_CORE.format(paper=p3[0], texture=p3[1], bleed=ink3, SEAL_TEXT=SEAL_TEXT)
 
 print(f"\n📸 03_usage.jpg (纸:{p3[0]} 墨:{ink3})")
+decor3 = random.choice(["a tiny ink wash cloud", "a small floating petal", "a subtle brush stroke mark", "a miniature bamboo shoot", "a delicate wave pattern"])
 
 prompt_3 = f"""{paper_desc3}
 
@@ -205,7 +216,7 @@ It should NOT have a large central illustration. Only a very small decorative el
 Title: "使用举例 / Usage Example"
 Chinese: "{EXAMPLE_CN}"
 English: "{EXAMPLE_EN}"
-Small floating ink wash decorative element. Seal "{SEAL_TEXT}" in seal script at bottom-right.
+Small floating ink wash decorative element: {decor3}. Seal "{SEAL_TEXT}" in seal script at bottom-right.
 3:4 vertical (1242x1660)."""
 
 if img1 and img2:
@@ -223,9 +234,8 @@ if img1 and img2:
 
 # ======== 后处理 ========
 print(f"\n🎨 细微后处理...")
-for f in sorted(os.listdir(OUT)):
-    if f.endswith('.jpg'):
-        subtle_noise(os.path.join(OUT, f))
+for i, f in enumerate(sorted([x for x in os.listdir(OUT) if x.endswith('.jpg')])):
+    subtle_noise(os.path.join(OUT, f), i)
 
 print(f"\n{'='*45}")
 print(f"🎉 完成！{OUT}/")
