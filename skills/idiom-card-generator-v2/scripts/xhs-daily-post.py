@@ -187,7 +187,7 @@ r = s.post(MCP_URL, json={
                 "/tmp/xhs_cards_v2/02_meaning.jpg",
                 "/tmp/xhs_cards_v2/03_usage.jpg"
             ],
-            "tags": ["成语", "双语", "学中文", "LearnChinese", "ThinkChinese", idiom, "若瑜成语"]
+            "tags": ["成语", "双语", "学中文", "LearnChinese", "ThinkChinese", "传统文化", "知识分享", idiom, "若瑜成语"]
         }
     }
 }, headers={"Mcp-Session-Id": sid})
