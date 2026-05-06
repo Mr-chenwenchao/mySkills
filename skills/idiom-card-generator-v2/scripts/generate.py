@@ -58,11 +58,11 @@ VISUAL_CORE = """# Visual Style: Traditional Chinese ink wash on authentic Xuan 
 [LIGHTING]: Natural, soft, directional side-lighting that emphasizes the 3D texture and depth of the paper surface."""
 
 PAPER_VARS = [
-    ("aged ivory with visible long plant fibers", "visible rice paper fibers and subtle water stain marks"),
-    ("warm cream with slight bamboo fiber traces", "fine fiber bundles and barely visible pulp texture"),
-    ("light ochre with natural aging discoloration", "slight pulp inconsistencies and gentle paper grain"),
-    ("pale beige with subtle foxing spots", "natural paper grain with faint age marks"),
-    ("cream ivory with tea-stained undertone", "fine bamboo fiber traces and subtle paper texture"),
+    ("heavily aged dark ivory with pronounced foxing and water stains", "aged, distressed paper with visible tears, dark stains at edges, and heavy fiber texture"),
+    ("warm fresh cream with subtle bamboo fiber traces", "clean, lightly textured paper with fine fiber bundles and minimal aging"),
+    ("deep tea-stained ochre with uneven coloration", "richly toned paper with pronounced tea staining, darker at bottom edge"),
+    ("pale weathered beige with scattered mold speckles", "lightly aged paper with subtle foxing spots and soft fiber grain"),
+    ("dark amber with heavy wear at fold lines", "well-used paper with crease marks, edge wear, and uneven surface texture"),
 ]
 INK_VARS = ["natural", "gentle", "subtle"]
 
@@ -179,6 +179,7 @@ prompt_2 = f"""{paper_desc2}
 
 Image 2: TEXT-FOCUSED explanation card. This is NOT a cover image.
 It should NOT have a large central illustration. Only a very small floating ink wash decorative motif.
+IMPORTANT: The paper texture and aging should be DIFFERENT from Image 1 — different stains, different wear pattern, different lighting angle. Same series but different physical paper sheet.
 
 "{IDIOM}" in calligraphy at top. "{PINYIN} · {EN_TITLE}" in English below.
 Title: "解释 / Explanation"
@@ -211,6 +212,7 @@ prompt_3 = f"""{paper_desc3}
 
 Image 3: TEXT-FOCUSED usage example card. This is NOT a cover image.
 It should NOT have a large central illustration. Only a very small decorative element.
+IMPORTANT: The paper texture and aging should be DIFFERENT from Images 1 and 2 — different paper color, different stains, different lighting. Same series but each card is a different physical sheet of paper.
 
 "{IDIOM}" in calligraphy. "{PINYIN} · {EN_TITLE}" in English below.
 Title: "使用举例 / Usage Example"
